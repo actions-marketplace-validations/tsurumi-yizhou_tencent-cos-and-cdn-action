@@ -34,22 +34,31 @@ class COS {
 
   uploadFile(p) {
     return new Promise((resolve, reject) => {
-      this.cos.putObject(
-        {
-          Bucket: this.bucket,
-          Region: this.region,
-          Key: path.join(this.remotePath, p),
-          StorageClass: "STANDARD",
-          Body: fs.createReadStream(path.join(this.localPath, p)),
-        },
-        function (err, data) {
-          if (err) {
-            return reject(err);
-          } else {
-            return resolve(data);
-          }
+      this.cos.headObject({
+        Bucket: this.bucket,
+        Region: this.region,
+        Key: path.join(this.remotePath, p),
+      }, (err, data) => {
+        if (!data) {
+          return this.cos.putObject({
+            Bucket: this.bucket,
+            Region: this.region,
+            Key: path.join(this.remotePath, p),
+            StorageClass: "STANDARD",
+            Body: fs.createReadStream(path.join(this.localPath, p)),
+          }, (err, data) => {
+            if (err) {
+              return reject(err);
+            } else {
+              return resolve(data);
+            }
+          })
+        } else if (err) {
+          return reject(err)
+        } else {
+          return resolve(data)
         }
-      );
+      })
     });
   }
 
