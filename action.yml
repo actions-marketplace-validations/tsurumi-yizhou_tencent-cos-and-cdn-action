@@ -1,4 +1,4 @@
-name: 'Tencent COS and CDN'
+name: tencent-cos-cdn
 description: 'Deploy files to tencent cloud COS and flush CDN cache'
 branding:
   icon: 'upload-cloud'
